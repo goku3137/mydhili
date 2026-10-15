@@ -1,477 +1,746 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-import MydhiliLogo from '../components/MydhiliLogo';
 import { 
-  Sparkles, 
   ArrowRight, 
   ShieldCheck, 
-  Feather, 
+  Truck, 
   Clock, 
-  Scissors, 
-  Award,
-  Calendar,
-  CheckCircle2,
-  Heart
+  Sparkles,
+  PhoneCall,
+  Scissors,
+  X
 } from 'lucide-react';
 
 export const HomePage = () => {
-  const { navigateTo, products } = useShop();
+  const { navigateTo, products, setSelectedCategory } = useShop();
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState('All');
 
-  // Selected showcase collections
-  const bridalHighlights = products.filter(p => p.category === 'Bridal Couture').slice(0, 3);
-  const bestsellers = products.filter(p => p.badge === 'Bestseller' || p.badge === 'Master Weaver Series' || p.badge === 'Bridal Favorite').slice(0, 4);
+  // Hero Announcement Card State & Auto-close Timer (5 seconds)
+  const TOTAL_HERO_DURATION = 5000;
+  const [showHeroCard, setShowHeroCard] = useState(true);
+  const [isClosingHeroCard, setIsClosingHeroCard] = useState(false);
+  const [isHeroCardPaused, setIsHeroCardPaused] = useState(false);
+  const [heroTimeLeft, setHeroTimeLeft] = useState(TOTAL_HERO_DURATION);
+
+  const handleCloseHeroCard = () => {
+    setIsClosingHeroCard(true);
+    setTimeout(() => {
+      setShowHeroCard(false);
+      setIsClosingHeroCard(false);
+    }, 350);
+  };
+
+  const handleReopenHeroCard = () => {
+    setHeroTimeLeft(TOTAL_HERO_DURATION);
+    setIsClosingHeroCard(false);
+    setShowHeroCard(true);
+  };
+
+  // Auto-close interval (pauses cleanly on hover)
+  useEffect(() => {
+    if (!showHeroCard || isClosingHeroCard || isHeroCardPaused) return;
+
+    const interval = setInterval(() => {
+      setHeroTimeLeft(prev => {
+        if (prev <= 100) {
+          clearInterval(interval);
+          handleCloseHeroCard();
+          return 0;
+        }
+        return prev - 100;
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [showHeroCard, isClosingHeroCard, isHeroCardPaused]);
+
+  // Filter products for the New Arrivals section dynamically based on selected pill
+  const newArrivalsList = products.filter(p => {
+    if (activeCategoryFilter === 'All') return true;
+    return p.category === activeCategoryFilter;
+  }).slice(0, 8);
+
+  // Curated bestsellers
+  const bestsellers = products.filter(
+    p => p.badge === 'Bestseller' || p.badge === 'Master Weaver Series' || p.badge === 'Atelier Heirloom'
+  ).slice(0, 4);
+
+  // Curated pure sarees
+  const sareeCollection = products.filter(
+    p => p.category === 'Kanchipuram Silks' || p.category === 'Banarasi Brocades' || p.category === 'Kerala Kasavu'
+  ).slice(0, 4);
+
+  const categories = [
+    'All',
+    'Bridal Couture',
+    'Kanchipuram Silks',
+    'Banarasi Brocades',
+    'Kerala Kasavu',
+    'Festive Silks',
+    'Bespoke Blouses'
+  ];
+
+  const categoryCards = [
+    {
+      title: 'Bridal Couture',
+      subtitle: 'Imperial Zardozi Lehengas',
+      category: 'Bridal Couture',
+      image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85'
+    },
+    {
+      title: 'Kanchipuram Silks',
+      subtitle: 'Pure 24K Gold Zari Handlooms',
+      category: 'Kanchipuram Silks',
+      image: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=85'
+    },
+    {
+      title: 'Banarasi Brocades',
+      subtitle: 'Handspun Katan Kadwa Weaves',
+      category: 'Banarasi Brocades',
+      image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=85'
+    },
+    {
+      title: 'Kerala Kasavu',
+      subtitle: 'Balaramapuram Pure Handlooms',
+      category: 'Kerala Kasavu',
+      image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=85'
+    }
+  ];
+
+  const scrollToNewArrivals = () => {
+    const el = document.getElementById('new-arrivals');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div className="homepage animate-fade-in">
-      {/* 1. Full-Screen Editorial Hero */}
+    <div className="homepage animate-fade-in" style={{ backgroundColor: 'var(--color-silk)', minHeight: '100vh' }}>
+      
+      {/* 1. Sleek Compact Split Hero Banner (Inspired by Iha Designs Banner) */}
       <section 
         style={{
           position: 'relative',
-          minHeight: '88vh',
-          display: 'flex',
-          alignItems: 'center',
           backgroundColor: 'var(--color-burgundy)',
           overflow: 'hidden',
-          color: 'var(--color-silk)'
+          borderBottom: '1px solid rgba(212, 175, 55, 0.3)'
         }}
       >
-        {/* Background Editorial High-Res Image with Luxury Scrim */}
         <div 
+          className="hero-split-banner"
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: `url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=2000&q=90')`,
-            backgroundPosition: 'center 25%',
-            backgroundSize: 'cover',
-            filter: 'brightness(0.72) contrast(1.08)'
-          }}
-        />
-        {/* Imperial Burgundy Gradient Scrim */}
-        <div 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'linear-gradient(90deg, rgba(56, 7, 18, 0.94) 0%, rgba(56, 7, 18, 0.75) 45%, rgba(56, 7, 18, 0.4) 100%)'
-          }}
-        />
-
-        {/* Hero Editorial Content */}
-        <div 
-          style={{
-            position: 'relative',
-            zIndex: 2,
             maxWidth: '1440px',
             margin: '0 auto',
-            padding: '80px 24px',
-            width: '100%'
+            minHeight: '440px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+            position: 'relative'
           }}
         >
-          <div style={{ maxWidth: '680px' }}>
+          {/* Left Visual Drape */}
+          <div 
+            style={{
+              position: 'relative',
+              minHeight: '260px',
+              backgroundImage: `url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85')`,
+              backgroundPosition: 'center 20%',
+              backgroundSize: 'cover'
+            }}
+          >
             <div 
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 14px',
-                backgroundColor: 'rgba(212, 175, 55, 0.15)',
-                border: '1px solid rgba(212, 175, 55, 0.35)',
-                marginBottom: '20px'
-              }}
-            >
-              <Sparkles size={13} color="var(--color-gold)" />
-              <span className="eyebrow" style={{ color: 'var(--color-gold-light)', fontSize: '0.7rem' }}>
-                Master Rebranding Edition 2026
-              </span>
-            </div>
-
-            <h1 
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(2.8rem, 5.5vw, 4.8rem)',
-                lineHeight: 1.1,
-                color: 'var(--color-silk)',
-                marginBottom: '22px',
-                fontWeight: 400
-              }}
-            >
-              Where Heritage <br />
-              <span style={{ fontStyle: 'italic', color: 'var(--color-gold)', fontWeight: 300 }}>
-                Becomes Heirloom.
-              </span>
-            </h1>
-
-            <p 
-              style={{
-                fontSize: 'clamp(0.95rem, 1.3vw, 1.15rem)',
-                color: 'rgba(250, 247, 242, 0.88)',
-                lineHeight: 1.7,
-                marginBottom: '36px',
-                maxWidth: '560px'
-              }}
-            >
-              Discover the art of South Asian couture. Honoring generational handlooms, bullion zardozi needlework, and modern bridal silhouettes tailored for discerning connoisseurs worldwide.
-            </p>
-
-            {/* CTAs */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-              <button 
-                onClick={() => navigateTo('shop')}
-                className="btn-luxury-gold"
-                style={{ fontSize: '0.82rem', padding: '16px 36px' }}
-              >
-                Explore The Collection <ArrowRight size={16} />
-              </button>
-
-              <button 
-                onClick={() => navigateTo('bespoke')}
-                className="btn-luxury-ghost-gold"
-                style={{ fontSize: '0.82rem', padding: '16px 32px' }}
-              >
-                <Calendar size={16} /> Book Private Consultation
-              </button>
-            </div>
-
-            {/* Micro Pillars */}
-            <div 
-              style={{
-                display: 'flex',
-                gap: '28px',
-                marginTop: '48px',
-                paddingTop: '24px',
-                borderTop: '1px solid rgba(212, 175, 55, 0.25)',
-                color: 'rgba(250, 247, 242, 0.8)',
-                fontSize: '0.75rem',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Feather size={14} color="var(--color-gold)" /> Pure Natural Fibers
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Scissors size={14} color="var(--color-gold)" /> Dedicated Atelier
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Award size={14} color="var(--color-gold)" /> Ethical Weaver Support
-              </div>
-            </div>
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(90deg, rgba(56, 7, 18, 0.4) 0%, rgba(56, 7, 18, 0.75) 100%)'
+              }} 
+            />
           </div>
+
+          {/* Right Visual Drape */}
+          <div 
+            style={{
+              position: 'relative',
+              minHeight: '260px',
+              backgroundImage: `url('https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85')`,
+              backgroundPosition: 'center 25%',
+              backgroundSize: 'cover'
+            }}
+          >
+            <div 
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(270deg, rgba(56, 7, 18, 0.4) 0%, rgba(56, 7, 18, 0.75) 100%)'
+              }} 
+            />
+          </div>
+
+          {/* Re-open Pill when Hero Announcement is Dismissed */}
+          {!showHeroCard && (
+            <button
+              onClick={handleReopenHeroCard}
+              className="hero-reopen-pill"
+              title="Click to view atelier announcement"
+              aria-label="Reopen welcome highlight"
+            >
+              <Sparkles size={13} />
+              <span>✦ Atelier Spotlight</span>
+            </button>
+          )}
+
+          {/* Center Floating Editorial Box */}
+          {showHeroCard && (
+            <div 
+              onMouseEnter={() => setIsHeroCardPaused(true)}
+              onMouseLeave={() => setIsHeroCardPaused(false)}
+              className={`hero-editorial-box ${isClosingHeroCard ? 'closing' : ''}`}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '90%',
+                maxWidth: '680px',
+                backgroundColor: 'rgba(56, 7, 18, 0.94)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(212, 175, 55, 0.45)',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(212, 175, 55, 0.15)',
+                padding: '36px 32px 34px',
+                textAlign: 'center',
+                color: 'var(--color-silk)',
+                zIndex: 3,
+                overflow: 'hidden'
+              }}
+            >
+              {/* Exit / Close Icon Button */}
+              <button 
+                onClick={handleCloseHeroCard}
+                className="hero-close-btn"
+                title="Dismiss (or auto-closes in 5s)"
+                aria-label="Close introduction card"
+              >
+                <X size={16} />
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
+                <span 
+                  className="eyebrow" 
+                  style={{ 
+                    color: 'var(--color-gold)', 
+                    display: 'inline-block', 
+                    fontSize: '0.72rem',
+                    letterSpacing: '0.2em'
+                  }}
+                >
+                  ✦ Authentic South Asian Couture Atelier
+                </span>
+                <span 
+                  style={{
+                    fontSize: '0.62rem',
+                    color: 'rgba(212, 175, 55, 0.85)',
+                    backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                    padding: '2px 8px',
+                    borderRadius: '10px',
+                    letterSpacing: '0.04em'
+                  }}
+                >
+                  {isHeroCardPaused ? 'Paused' : `${Math.ceil(heroTimeLeft / 1000)}s`}
+                </span>
+              </div>
+
+              <h1 
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: 'clamp(1.8rem, 3.2vw, 2.7rem)',
+                  lineHeight: 1.15,
+                  color: 'var(--color-silk)',
+                  marginBottom: '12px',
+                  fontWeight: 400
+                }}
+              >
+                Unlock the World of Bridal &amp; Heirloom Fashion
+              </h1>
+
+              <p 
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.86rem',
+                  color: 'rgba(250, 247, 242, 0.88)',
+                  lineHeight: 1.6,
+                  marginBottom: '24px',
+                  maxWidth: '520px',
+                  margin: '0 auto 24px'
+                }}
+              >
+                Shop Latest Wedding Lehengas, Kanchipuram Silks, Banarasi Brocades, Kerala Kasavu &amp; Bespoke Blouses
+              </p>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => {
+                    scrollToNewArrivals();
+                    handleCloseHeroCard();
+                  }}
+                  className="btn-luxury-gold"
+                  style={{ padding: '12px 30px', fontSize: '0.76rem' }}
+                >
+                  Explore Now
+                </button>
+
+                <button 
+                  onClick={() => navigateTo('shop')}
+                  className="btn-luxury-ghost-gold"
+                  style={{ padding: '12px 26px', fontSize: '0.76rem' }}
+                >
+                  View All Collections
+                </button>
+              </div>
+
+              {/* Progress Countdown Bar */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: 'rgba(212, 175, 55, 0.18)'
+                }}
+                title={isHeroCardPaused ? "Paused while hovering" : `Auto-closes in ${Math.ceil(heroTimeLeft / 1000)}s`}
+              >
+                <div 
+                  style={{
+                    height: '100%',
+                    width: `${(heroTimeLeft / TOTAL_HERO_DURATION) * 100}%`,
+                    background: 'linear-gradient(90deg, var(--color-gold), #FFF8E7)',
+                    boxShadow: '0 0 8px rgba(212, 175, 55, 0.7)',
+                    transition: isHeroCardPaused ? 'none' : 'width 0.1s linear'
+                  }} 
+                />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* 2. Four Core Brand Pillars Section (From Brand Guidelines Booklet Page 2) */}
-      <section 
-        style={{
-          padding: '80px 24px',
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid var(--color-silk-border)'
-        }}
-      >
-        <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 56px' }}>
-            <span className="eyebrow">✦ Brand Foundations</span>
-            <h2 style={{ fontSize: '2.5rem', color: 'var(--color-burgundy)', marginTop: '8px', marginBottom: '14px' }}>
-              The Four Pillars of Mydhili Couture
-            </h2>
-            <div className="gold-rule" style={{ maxWidth: '140px', margin: '14px auto' }} />
-            <p style={{ color: 'var(--color-onyx-muted)', fontSize: '0.9rem' }}>
-              Rooted in the Sanskrit name for Goddess Sita, symbolizing graceful sovereignty, auspicious elegance, and unhurried artisanal craftsmanship.
-            </p>
-          </div>
-
-          <div 
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '24px'
-            }}
-          >
-            {[
-              {
-                title: 'Imperial Heritage',
-                desc: 'Honoring traditional handlooms—Kanchipuram silks, Banarasi gold brocades, and Kerala Kasavu directly with master weavers.',
-                action: () => navigateTo('shop', 'Kanchipuram Silks')
-              },
-              {
-                title: 'Artisanal Haute Couture',
-                desc: 'Precision needlework, bullion zardozi, beaten gota patti, and hand-embroidery crafted in our dedicated atelier.',
-                action: () => navigateTo('bridal')
-              },
-              {
-                title: 'Modern Silhouette',
-                desc: 'Marrying timeless draping with modern corsetry, tailored cuts, and fluid comfort for the modern celebration.',
-                action: () => navigateTo('shop', 'Festive Silks')
-              },
-              {
-                title: 'Bespoke Bridal Salon',
-                desc: 'Private client consultations, custom bridal sketch sessions, and personalized heirloom customizations.',
-                action: () => navigateTo('bespoke')
-              }
-            ].map((pillar, idx) => (
-              <div 
-                key={idx}
-                style={{
-                  padding: '36px 28px',
-                  backgroundColor: 'var(--color-silk)',
-                  border: '1px solid var(--color-silk-border)',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  transition: 'transform 0.3s ease, border-color 0.3s ease'
-                }}
+      {/* Main Content Area */}
+      <div className="homepage-main-container" style={{ maxWidth: '1440px', margin: '0 auto', padding: '36px 24px 80px' }}>
+        
+        {/* 2. Interactive Category Filter Bar (Instant 1-Click Access to Products) */}
+        <div style={{ marginBottom: '32px' }}>
+          <div className="category-pills-bar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategoryFilter(cat)}
+                className={`category-pill ${activeCategoryFilter === cat ? 'active' : ''}`}
               >
-                <div>
-                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--color-gold)', display: 'block', marginBottom: '12px' }}>
-                    0{idx + 1}
-                  </span>
-                  <h3 style={{ fontSize: '1.35rem', color: 'var(--color-burgundy)', marginBottom: '12px' }}>
-                    {pillar.title}
-                  </h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--color-onyx-muted)', lineHeight: 1.6 }}>
-                    {pillar.desc}
-                  </p>
-                </div>
-                <button
-                  onClick={pillar.action}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--color-burgundy)',
-                    fontSize: '0.74rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    textAlign: 'left',
-                    paddingTop: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  Explore Pillar &rarr;
-                </button>
-              </div>
+                {cat === 'All' ? '✨ All Products' : cat}
+              </button>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* 3. Featured Bridal Couture Spotlight */}
-      <section 
-        style={{
-          padding: '90px 24px',
-          backgroundColor: 'var(--color-silk)'
-        }}
-      >
-        <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
-          <div 
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-end',
-              marginBottom: '40px',
-              flexWrap: 'wrap',
-              gap: '20px'
-            }}
-          >
+        {/* 3. SECTION: NEW ARRIVAL (Direct Product Grid) */}
+        <section id="new-arrivals" style={{ marginBottom: '64px', scrollMarginTop: '100px' }}>
+          <div className="section-header-row">
             <div>
-              <span className="eyebrow">✦ Signature Ensembles</span>
-              <h2 style={{ fontSize: '2.6rem', color: 'var(--color-burgundy)', marginTop: '6px' }}>
-                The Bridal Collection
-              </h2>
+              <h2 className="section-title">NEW ARRIVAL</h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--color-onyx-muted)', marginTop: '4px' }}>
+                Handcrafted wedding lehengas and master-woven silks freshly finished on atelier looms
+              </p>
             </div>
             <button 
-              onClick={() => navigateTo('bridal')}
-              className="btn-luxury-outline"
+              onClick={() => navigateTo('shop')}
+              className="section-view-all"
             >
-              View Bridal Lookbook &rarr;
+              View all <ArrowRight size={14} />
             </button>
           </div>
 
-          <div 
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '28px'
-            }}
-          >
-            {bridalHighlights.map((product) => (
+          <div className="product-grid-4">
+            {newArrivalsList.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* 4. Editorial Craftsmanship Split Banner */}
-      <section 
-        style={{
-          backgroundColor: 'var(--color-burgundy)',
-          color: 'var(--color-silk)',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          alignItems: 'center'
-        }}
-      >
-        {/* Left Editorial Narrative */}
-        <div style={{ padding: '80px clamp(24px, 6vw, 80px)' }}>
-          <span className="eyebrow" style={{ color: 'var(--color-gold-light)' }}>
-            ✦ Artisanal Splendor
-          </span>
-          <h2 
-            style={{
-              fontSize: 'clamp(2.2rem, 3.8vw, 3.2rem)',
-              color: 'var(--color-silk)',
-              lineHeight: 1.15,
-              marginTop: '12px',
-              marginBottom: '20px'
-            }}
-          >
-            "We do not merely craft attire; we preserve ancestral weaves and celebratory memories."
-          </h2>
-          <div className="gold-rule" style={{ maxWidth: '100px', margin: '20px 0' }} />
-          <p style={{ color: 'rgba(250, 247, 242, 0.8)', fontSize: '0.9rem', lineHeight: 1.8, marginBottom: '28px' }}>
-            Every creation emerges from an unyielding commitment to genuine natural fibers, ethical weaver support, and unhurried hand craftsmanship. In our dedicated atelier, karigars spend hundreds of hours couching authentic zardozi bullion wire and beating pure gota patti onto hand-dyed silks.
-          </p>
-
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          <div style={{ textAlign: 'center', marginTop: '36px' }}>
             <button 
-              onClick={() => navigateTo('about')}
-              className="btn-luxury-gold"
+              onClick={() => navigateTo('shop')}
+              className="btn-luxury-primary"
+              style={{ minWidth: '220px' }}
             >
-              Discover Our Craft
-            </button>
-            <button 
-              onClick={() => navigateTo('bespoke')}
-              className="btn-luxury-ghost-gold"
-            >
-              Book An Atelier Visit
+              View All New Arrivals
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* Right Close-Up Craftsmanship Photograph */}
-        <div 
-          style={{
-            position: 'relative',
-            minHeight: '520px',
-            backgroundImage: `url('https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1200&q=85')`,
-            backgroundPosition: 'center',
-            backgroundSize: 'cover'
-          }}
-        >
-          {/* Subtle gold badge floating on image */}
-          <div 
-            style={{
-              position: 'absolute',
-              bottom: '30px',
-              right: '30px',
-              backgroundColor: 'rgba(56, 7, 18, 0.9)',
-              padding: '16px 20px',
-              border: '1px solid var(--color-gold)',
-              backdropFilter: 'blur(6px)'
-            }}
-          >
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', color: 'var(--color-gold)' }}>
-              Kurz Luxor 428 Semi-Matte Gold
+        {/* 4. SECTION: EXPLORE OUR BEST CATEGORIES (Category Image Cards) */}
+        <section style={{ marginBottom: '64px' }}>
+          <div className="section-header-row">
+            <div>
+              <h2 className="section-title">Explore Our Best Categories</h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--color-onyx-muted)', marginTop: '4px' }}>
+                Browse by South Asian textile traditions and regional handloom clusters
+              </p>
             </div>
-            <div style={{ fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-silk)' }}>
-              Tested Authentic Bullion Thread
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Master Weaver Handlooms & Bestsellers Grid */}
-      <section style={{ padding: '90px 24px', backgroundColor: '#FFFFFF' }}>
-        <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 48px' }}>
-            <span className="eyebrow">✦ Discerning Connoisseurs</span>
-            <h2 style={{ fontSize: '2.5rem', color: 'var(--color-burgundy)', marginTop: '8px' }}>
-              Curated Masterpieces
-            </h2>
-            <div className="gold-rule" style={{ maxWidth: '120px', margin: '14px auto' }} />
-            <p style={{ color: 'var(--color-onyx-muted)', fontSize: '0.88rem' }}>
-              Hand-selected Kanchipuram bridal drapes, Banarasi kadwa brocades, and iconic Kerala Kasavu handlooms.
-            </p>
+            <button 
+              onClick={() => navigateTo('shop')}
+              className="section-view-all"
+            >
+              View all <ArrowRight size={14} />
+            </button>
           </div>
 
-          <div 
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '24px'
-            }}
-          >
+          <div className="category-grid-4">
+            {categoryCards.map((item, idx) => (
+              <div 
+                key={idx}
+                className="category-card"
+                onClick={() => {
+                  navigateTo('shop', item.category);
+                }}
+              >
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  loading="lazy" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=85';
+                  }}
+                />
+                <div className="category-card-overlay">
+                  <span 
+                    style={{ 
+                      fontSize: '0.68rem', 
+                      letterSpacing: '0.14em', 
+                      textTransform: 'uppercase', 
+                      color: 'var(--color-gold-light)',
+                      marginBottom: '4px',
+                      fontFamily: 'var(--font-sans)'
+                    }}
+                  >
+                    Collection
+                  </span>
+                  <h3 
+                    style={{ 
+                      fontFamily: 'var(--font-serif)', 
+                      fontSize: '1.45rem', 
+                      color: 'var(--color-silk)',
+                      lineHeight: 1.2
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p 
+                    style={{ 
+                      fontSize: '0.76rem', 
+                      color: 'rgba(250, 247, 242, 0.8)', 
+                      marginTop: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    {item.subtitle} <ArrowRight size={13} color="var(--color-gold)" />
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 5. SECTION: PROVEN BESTSELLERS */}
+        <section style={{ marginBottom: '64px' }}>
+          <div className="section-header-row">
+            <div>
+              <h2 className="section-title">Proven Bestsellers</h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--color-onyx-muted)', marginTop: '4px' }}>
+                Our most cherished bridal ensembles and temple gold silks celebrated by brides globally
+              </p>
+            </div>
+            <button 
+              onClick={() => navigateTo('shop')}
+              className="section-view-all"
+            >
+              View all <ArrowRight size={14} />
+            </button>
+          </div>
+
+          <div className="product-grid-4">
             {bestsellers.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '48px' }}>
+          <div style={{ textAlign: 'center', marginTop: '36px' }}>
             <button 
               onClick={() => navigateTo('shop')}
-              className="btn-luxury-primary"
-              style={{ padding: '16px 44px' }}
+              className="btn-luxury-outline"
+              style={{ minWidth: '220px' }}
             >
-              Browse Complete Catalogue ({products.length} Ensembles)
+              Explore All Bestsellers
             </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* 6. High-Society Client Accolades / Testimonials */}
-      <section 
-        style={{
-          padding: '80px 24px',
-          backgroundColor: 'var(--color-silk)',
-          borderTop: '1px solid var(--color-silk-border)'
-        }}
-      >
-        <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
-          <span className="eyebrow">✦ Sovereign Muses</span>
-          <h2 style={{ fontSize: '2.3rem', color: 'var(--color-burgundy)', marginTop: '6px', marginBottom: '32px' }}>
-            Words From Our Brides
-          </h2>
+        {/* 6. SECTION: HERITAGE SAREES */}
+        <section style={{ marginBottom: '64px' }}>
+          <div className="section-header-row">
+            <div>
+              <h2 className="section-title">Heritage Saree Collection</h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--color-onyx-muted)', marginTop: '4px' }}>
+                Pure Kanchipuram silks, Banarasi brocades, and Kerala Kasavu handlooms with pure silver-gold zari
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                navigateTo('shop', 'Kanchipuram Silks');
+              }}
+              className="section-view-all"
+            >
+              View all <ArrowRight size={14} />
+            </button>
+          </div>
 
+          <div className="product-grid-4">
+            {sareeCollection.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+
+        {/* 7. CLEAN BESPOKE ATELIER BANNER (Direct Call-to-Action) */}
+        <section 
+          style={{
+            backgroundColor: 'var(--color-burgundy)',
+            color: 'var(--color-silk)',
+            padding: '50px 32px',
+            border: '1px solid rgba(212, 175, 55, 0.35)',
+            marginBottom: '64px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '24px'
+          }}
+        >
+          <div style={{ maxWidth: '640px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <Scissors size={14} color="var(--color-gold)" />
+              <span className="eyebrow" style={{ color: 'var(--color-gold-light)', fontSize: '0.72rem' }}>
+                Bespoke Atelier Services
+              </span>
+            </div>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.1rem', color: 'var(--color-silk)', marginBottom: '8px' }}>
+              Custom Bridal Fittings &amp; Hand-Embroidered Blouses
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: 'rgba(250, 247, 242, 0.85)', lineHeight: 1.6 }}>
+              Looking for a custom Muhurtham drape, tailored bridal blouse, or heirloom saree restyling? Book a private appointment at our flagship atelier or schedule a virtual video session.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+            <button 
+              onClick={() => navigateTo('bespoke')}
+              className="btn-luxury-gold"
+              style={{ padding: '14px 28px', whiteSpace: 'nowrap' }}
+            >
+              Book Private Consultation
+            </button>
+            <button 
+              onClick={() => navigateTo('bridal')}
+              className="btn-luxury-ghost-gold"
+              style={{ padding: '14px 28px', whiteSpace: 'nowrap' }}
+            >
+              View Bridal Lookbook
+            </button>
+          </div>
+        </section>
+
+        {/* 8. COLLAPSIBLE FAQS SECTION (Exact match to Iha Designs Collapsible Content) */}
+        <section style={{ marginBottom: '64px', backgroundColor: '#FFFFFF', border: '1px solid var(--color-silk-border)', padding: '40px 32px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <span className="eyebrow">✦ Client Support &amp; Policies</span>
+            <h2 className="section-title" style={{ marginTop: '6px' }}>Frequently Asked Questions</h2>
+            <p style={{ fontSize: '0.84rem', color: 'var(--color-onyx-muted)', marginTop: '4px' }}>
+              Clear guidance on order tracking, bridal appointments, and insured delivery
+            </p>
+          </div>
+
+          <div style={{ maxWidth: '860px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+            {[
+              {
+                q: 'How do I track my order?',
+                a: 'Once your heirloom is dispatched from our Chennai atelier, an automated tracking number and airway bill link (BlueDart Apex or DHL Express) is sent via email and SMS. You can also view live status in your Sovereign Profile.'
+              },
+              {
+                q: 'What is your standard shipping and delivery timeline?',
+                a: 'Ready-to-ship handloom sarees and festive pieces are dispatched within 48 to 72 hours. Bespoke bridal lehengas with hand-done zardozi needlework require 4 to 8 weeks of atelier craftsmanship.'
+              },
+              {
+                q: 'What if I receive a damaged product or need an exchange?',
+                a: 'Every parcel is packed inside the tamper-evident Mydhili Keepsake Chest and fully insured during transit. In the rare event of transit damage, notify our concierge within 48 hours for immediate replacement or full resolution.'
+              },
+              {
+                q: 'Can international clients schedule virtual video consultations?',
+                a: 'Yes. We host private high-definition video consultations across the USA, UK, Canada, UAE, and Singapore to review fabric swatches, colorways, and precise bridal measurements in your timezone.'
+              }
+            ].map((faq, idx) => (
+              <details 
+                key={idx}
+                style={{
+                  borderBottom: '1px solid var(--color-silk-border)',
+                  padding: '16px 0',
+                  cursor: 'pointer'
+                }}
+              >
+                <summary
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '0.88rem',
+                    fontWeight: 600,
+                    color: 'var(--color-burgundy)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    outline: 'none',
+                    listStyle: 'none'
+                  }}
+                >
+                  <span>{faq.q}</span>
+                  <span style={{ color: 'var(--color-gold)', fontSize: '1.2rem', fontWeight: 400 }}>+</span>
+                </summary>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-onyx)', lineHeight: 1.7, marginTop: '10px', paddingRight: '20px' }}>
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* 9. MINIMAL TRUST BAR (Zero Clutter, 4 Pillars) */}
+        <section 
+          style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--color-silk-border)',
+            padding: '32px 24px'
+          }}
+        >
           <div 
             style={{
-              backgroundColor: '#FFFFFF',
-              padding: '48px 36px',
-              border: '1px solid var(--color-silk-border)',
-              boxShadow: 'var(--shadow-subtle)',
-              position: 'relative'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+              gap: '24px'
             }}
           >
-            <p 
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.45rem',
-                color: 'var(--color-burgundy)',
-                fontStyle: 'italic',
-                lineHeight: 1.6,
-                marginBottom: '20px'
-              }}
-            >
-              "The bespoke bridal sketch session with Mydhili’s atelier was surreal. Wearing my Kanchipuram silk saree with the authentic bullion zardozi blouse made me feel connected to centuries of regal heritage. The craftsmanship drew tears from my grandmother."
-            </p>
-            <div style={{ fontWeight: 600, fontSize: '0.82rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-gold)' }}>
-              ✦ Aishwarya & Gautham Ramanathan
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div 
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                <ShieldCheck size={22} color="var(--color-burgundy)" />
+              </div>
+              <div>
+                <h4 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-burgundy)' }}>
+                  100% Pure Silk &amp; Zari
+                </h4>
+                <p style={{ fontSize: '0.74rem', color: 'var(--color-onyx-muted)', marginTop: '2px' }}>
+                  Tested and certified genuine electroplated gold zari
+                </p>
+              </div>
             </div>
-            <div style={{ fontSize: '0.74rem', color: 'var(--color-onyx-muted)', marginTop: '4px' }}>
-              Chennai & London • Muhurtham Ceremony 2026
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div 
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                <Truck size={22} color="var(--color-burgundy)" />
+              </div>
+              <div>
+                <h4 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-burgundy)' }}>
+                  Insured Delivery
+                </h4>
+                <p style={{ fontSize: '0.74rem', color: 'var(--color-onyx-muted)', marginTop: '2px' }}>
+                  Complimentary worldwide transit above ₹50,000
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div 
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                <Clock size={22} color="var(--color-burgundy)" />
+              </div>
+              <div>
+                <h4 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-burgundy)' }}>
+                  380+ Hours Needlework
+                </h4>
+                <p style={{ fontSize: '0.74rem', color: 'var(--color-onyx-muted)', marginTop: '2px' }}>
+                  Authentic bullion zardozi &amp; generational weaving
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div 
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                <PhoneCall size={22} color="var(--color-burgundy)" />
+              </div>
+              <div>
+                <h4 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-burgundy)' }}>
+                  Bridal Concierge
+                </h4>
+                <p style={{ fontSize: '0.74rem', color: 'var(--color-onyx-muted)', marginTop: '2px' }}>
+                  Direct styling assistance &amp; virtual diaspora appointments
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
     </div>
   );
 };

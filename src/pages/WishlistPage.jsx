@@ -45,13 +45,7 @@ export const WishlistPage = () => {
             </button>
           </div>
         ) : (
-          <div 
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '28px'
-            }}
-          >
+          <div className="product-grid-4">
             {wishlistedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

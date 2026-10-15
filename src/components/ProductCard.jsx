@@ -1,15 +1,37 @@
 import React, { useState } from 'react';
-import { useShop } from '../context/ShopContext';
+import { Link } from 'react-router-dom';
+import { useShop, categoryToSlug } from '../context/ShopContext';
 import { Heart, Eye, ShoppingBag, Sparkles } from 'lucide-react';
+
+const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=85';
 
 export const ProductCard = ({ product }) => {
   const { viewProduct, addToCart, isInWishlist, toggleWishlist } = useShop();
   const [isHovered, setIsHovered] = useState(false);
   const isWishlisted = isInWishlist(product.id);
 
-  // Fallback secondary image for hover transition
-  const primaryImg = product.images[0];
-  const secondaryImg = product.images[1] || product.images[0];
+  // Safe image resolution with fallbacks
+  const initialPrimary = (product.images && product.images[0]) || product.image || FALLBACK_PRODUCT_IMAGE;
+  const initialSecondary = (product.images && (product.images[1] || product.images[0])) || product.image || FALLBACK_PRODUCT_IMAGE;
+
+  const [primarySrc, setPrimarySrc] = useState(initialPrimary);
+  const [secondarySrc, setSecondarySrc] = useState(initialSecondary);
+
+  // Safe delivery & handloom badge logic (prevents "undefinedd Handloom")
+  const getDeliveryBadge = () => {
+    if (typeof product.leadTimeDays === 'number') {
+      return product.leadTimeDays <= 3 ? 'Ready to Ship' : `${product.leadTimeDays}d Handloom`;
+    }
+    if (product.deliveryTime) {
+      if (product.deliveryTime.toLowerCase().includes('ready')) return 'Ready to Ship';
+      if (product.isMadeToOrder) return 'Bespoke Order';
+      return product.deliveryTime;
+    }
+    return product.isMadeToOrder ? 'Bespoke Atelier' : 'Ready to Ship';
+  };
+
+  const isQuickShip = (typeof product.leadTimeDays === 'number' && product.leadTimeDays <= 3) || 
+    (!product.isMadeToOrder && (!product.deliveryTime || product.deliveryTime.toLowerCase().includes('ready')));
 
   return (
     <div 
@@ -32,34 +54,25 @@ export const ProductCard = ({ product }) => {
           width: '100%',
           paddingBottom: '135%', // Elegant portrait ratio 4:5.4
           overflow: 'hidden',
-          backgroundColor: '#f3eee6',
-          cursor: 'pointer'
+          backgroundColor: '#f3eee6'
         }}
-        onClick={() => viewProduct(product.id)}
       >
-        {/* Primary Image */}
-        <img 
-          src={primaryImg} 
-          alt={product.name}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'opacity 0.6s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-            opacity: isHovered && product.images[1] ? 0 : 1,
-            transform: isHovered ? 'scale(1.04)' : 'scale(1)'
-          }}
-          loading="lazy"
-        />
-
-        {/* Hover Secondary Image */}
-        {product.images[1] && (
+        <Link 
+          to={`/products/${product.id}`}
+          style={{ display: 'block', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}
+          aria-label={`View details of ${product.name}`}
+        >
+          {/* Primary Image - ALWAYS VISIBLE (opacity: 1), never hidden by default */}
           <img 
-            src={secondaryImg} 
-            alt={`${product.name} alternate view`}
+            src={primarySrc} 
+            alt={product.name || 'Mydhili Luxury Creation'}
+            onError={() => {
+              if (product.images && product.images[1] && primarySrc !== product.images[1]) {
+                setPrimarySrc(product.images[1]);
+              } else {
+                setPrimarySrc(FALLBACK_PRODUCT_IMAGE);
+              }
+            }}
             style={{
               position: 'absolute',
               top: 0,
@@ -67,37 +80,85 @@ export const ProductCard = ({ product }) => {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              transition: 'opacity 0.6s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-              opacity: isHovered ? 1 : 0,
-              transform: isHovered ? 'scale(1.04)' : 'scale(1.08)'
+              transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+              opacity: 1, // Permanently 1: always shows primary view
+              transform: isHovered ? 'scale(1.05)' : 'scale(1)'
             }}
             loading="lazy"
           />
-        )}
 
-        {/* Badge (Atelier Heirloom / Master Weaver / Made to Order) */}
-        {product.badge && (
-          <div 
-            style={{
-              position: 'absolute',
-              top: '12px',
-              left: '12px',
-              backgroundColor: 'rgba(56, 7, 18, 0.92)',
-              color: 'var(--color-gold)',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '0.65rem',
-              fontWeight: 600,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              padding: '4px 10px',
-              border: '1px solid rgba(212, 175, 55, 0.4)',
-              backdropFilter: 'blur(4px)',
-              zIndex: 2
-            }}
-          >
-            {product.badge}
-          </div>
-        )}
+          {/* Hover Secondary Image - Fades in smoothly on top */}
+          {secondarySrc && secondarySrc !== primarySrc && (
+            <img 
+              src={secondarySrc} 
+              alt={`${product.name} alternate view`}
+              onError={() => {
+                setSecondarySrc(FALLBACK_PRODUCT_IMAGE);
+              }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: 'opacity 0.6s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                opacity: isHovered ? 1 : 0,
+                transform: isHovered ? 'scale(1.05)' : 'scale(1.08)',
+                pointerEvents: 'none'
+              }}
+              loading="lazy"
+            />
+          )}
+        </Link>
+
+        {/* Top Badges */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: '12px',
+            left: '12px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            zIndex: 3,
+            pointerEvents: 'none'
+          }}
+        >
+          {product.isMadeToOrder && (
+            <span 
+              style={{
+                backgroundColor: 'var(--color-burgundy)',
+                color: 'var(--color-gold-light)',
+                fontSize: '0.62rem',
+                fontFamily: 'var(--font-sans)',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                padding: '4px 8px',
+                fontWeight: 600
+              }}
+            >
+              Bespoke Atelier
+            </span>
+          )}
+          {product.badge && (
+            <span 
+              style={{
+                backgroundColor: 'rgba(250, 247, 242, 0.95)',
+                color: 'var(--color-onyx)',
+                border: '1px solid var(--color-gold)',
+                fontSize: '0.62rem',
+                fontFamily: 'var(--font-sans)',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                padding: '3px 8px',
+                fontWeight: 500
+              }}
+            >
+              {product.badge}
+            </span>
+          )}
+        </div>
 
         {/* Wishlist Button */}
         <button
@@ -132,12 +193,13 @@ export const ProductCard = ({ product }) => {
 
         {/* Quick Action Overlay (Slide up on hover) */}
         <div 
+          className="product-quick-action-overlay"
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: 'rgba(56, 7, 18, 0.85)',
+            backgroundColor: 'rgba(56, 7, 18, 0.88)',
             backdropFilter: 'blur(4px)',
             padding: '12px',
             display: 'flex',
@@ -148,8 +210,8 @@ export const ProductCard = ({ product }) => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={() => viewProduct(product.id)}
+          <Link
+            to={`/products/${product.id}`}
             style={{
               flex: 1,
               backgroundColor: 'transparent',
@@ -164,11 +226,12 @@ export const ProductCard = ({ product }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '6px',
+              textDecoration: 'none'
             }}
           >
             <Eye size={14} color="var(--color-gold)" /> Quick View
-          </button>
+          </Link>
           <button
             onClick={() => addToCart(product, product.availableSizes[0] || 'Free Size')}
             style={{
@@ -196,6 +259,7 @@ export const ProductCard = ({ product }) => {
 
       {/* Product Details Section */}
       <div 
+        className="product-card-details"
         style={{
           padding: '18px 16px 20px',
           display: 'flex',
@@ -206,7 +270,8 @@ export const ProductCard = ({ product }) => {
         }}
       >
         <div>
-          <div 
+          <Link 
+            to={`/collections/${categoryToSlug(product.category)}`}
             style={{
               fontSize: '0.68rem',
               fontFamily: 'var(--font-sans)',
@@ -214,24 +279,29 @@ export const ProductCard = ({ product }) => {
               textTransform: 'uppercase',
               color: 'var(--color-gulabi)',
               marginBottom: '6px',
-              fontWeight: 600
+              fontWeight: 600,
+              textDecoration: 'none',
+              display: 'inline-block'
             }}
           >
             {product.category}
-          </div>
+          </Link>
 
-          <h3 
-            onClick={() => viewProduct(product.id)}
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '1.18rem',
-              color: 'var(--color-burgundy)',
-              cursor: 'pointer',
-              lineHeight: 1.3,
-              marginBottom: '6px'
-            }}
-          >
-            {product.name}
+          <h3 style={{ margin: 0, marginBottom: '6px', lineHeight: 1.3 }}>
+            <Link
+              to={`/products/${product.id}`}
+              className="product-card-title"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '1.18rem',
+                color: 'var(--color-burgundy)',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              {product.name}
+            </Link>
           </h3>
 
           <p 
@@ -260,11 +330,11 @@ export const ProductCard = ({ product }) => {
             borderTop: '1px dashed var(--color-silk-border)'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          <div>
             <span 
               style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '1.05rem',
+                fontFamily: 'var(--font-serif)',
+                fontSize: '1.25rem',
                 fontWeight: 600,
                 color: 'var(--color-burgundy)'
               }}
@@ -274,10 +344,10 @@ export const ProductCard = ({ product }) => {
             {product.originalPrice && (
               <span 
                 style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   color: 'var(--color-onyx-muted)',
-                  textDecoration: 'line-through'
+                  textDecoration: 'line-through',
+                  marginLeft: '8px'
                 }}
               >
                 ₹{product.originalPrice.toLocaleString('en-IN')}
@@ -288,12 +358,13 @@ export const ProductCard = ({ product }) => {
           <span 
             style={{
               fontSize: '0.7rem',
-              color: product.isMadeToOrder ? 'var(--color-gulabi)' : '#2e7d32',
-              fontWeight: 500,
-              letterSpacing: '0.04em'
+              fontFamily: 'var(--font-sans)',
+              letterSpacing: '0.08em',
+              color: isQuickShip ? '#2A6E3B' : 'var(--color-onyx-muted)',
+              fontWeight: 500
             }}
           >
-            {product.isMadeToOrder ? 'Bespoke Order' : 'In Stock'}
+            {getDeliveryBadge()}
           </span>
         </div>
       </div>

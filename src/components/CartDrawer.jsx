@@ -154,6 +154,10 @@ export const CartDrawer = () => {
                 <img
                   src={item.images[0]}
                   alt={item.name}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80';
+                  }}
                   style={{
                     width: '84px',
                     height: '110px',

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import MydhiliLogo from './MydhiliLogo';
 import { 
@@ -8,16 +9,12 @@ import {
   User, 
   Menu, 
   X, 
-  Sparkles, 
-  Calendar, 
   ChevronRight,
-  ShieldCheck
+  ChevronDown
 } from 'lucide-react';
 
 export const Header = () => {
   const { 
-    activePage, 
-    navigateTo, 
     cartCount, 
     wishlist, 
     isSearchOpen, 
@@ -30,14 +27,22 @@ export const Header = () => {
   } = useShop();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const navLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'shop', label: 'Collections' },
-    { id: 'bridal', label: 'Bridal Couture' },
-    { id: 'bespoke', label: 'Bespoke Atelier' },
-    { id: 'about', label: 'Our Craftsmanship' },
-    { id: 'contact', label: 'Contact' }
+    { id: 'home', label: 'HOME', path: '/' },
+    { 
+      id: 'new-arrivals', 
+      label: 'NEW ARRIVAL', 
+      path: '/#new-arrivals',
+      isAnchor: true
+    },
+    { id: 'shop', label: 'COLLECTIONS', path: '/collections' },
+    { id: 'bridal', label: 'BRIDAL COUTURE', path: '/bridal' },
+    { id: 'bespoke', label: 'BESPOKE ATELIER', path: '/bespoke' },
+    { id: 'about', label: 'OUR STORY', path: '/about' },
+    { id: 'contact', label: 'CONTACT', path: '/contact' }
   ];
 
   // Quick search results preview
@@ -49,72 +54,97 @@ export const Header = () => {
       ).slice(0, 4)
     : [];
 
+  const handleAnchorClick = (e, path) => {
+    setMobileMenuOpen(false);
+    if (location.pathname === '/') {
+      e.preventDefault();
+      const el = document.getElementById('new-arrivals');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/#new-arrivals');
+      setTimeout(() => {
+        const el = document.getElementById('new-arrivals');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
+  };
+
   return (
     <>
-      {/* Top Luxury Announcement Bar */}
+      {/* Top Announcement Bar (Inspired by Iha Designs) */}
       <div 
+        className="header-announcement-bar"
         style={{
           backgroundColor: 'var(--color-burgundy)',
           color: 'var(--color-gold)',
           fontSize: '0.72rem',
-          letterSpacing: '0.18em',
+          letterSpacing: '0.14em',
           textTransform: 'uppercase',
-          padding: '8px 16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          padding: '8px 24px',
           borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
           fontFamily: 'var(--font-sans)',
           zIndex: 101,
           position: 'relative'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 auto' }}>
-          <Sparkles size={12} style={{ color: 'var(--color-gold)' }} />
-          <span>Private Bridal Salon Appointments Open for 2026 Season • Worldwide Insured White-Glove Delivery</span>
-          <button 
-            onClick={() => navigateTo('bespoke')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-gold-light)',
-              textDecoration: 'underline',
+        <div 
+          style={{ 
+            maxWidth: '1440px', 
+            margin: '0 auto', 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            width: '100%' 
+          }}
+        >
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <span>WELCOME TO MYDHILI BOUTIQUE — SOUTH ASIAN HAUTE COUTURE ATELIER</span>
+          </div>
+
+          <div 
+            className="top-bar-country"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px', 
               cursor: 'pointer',
-              fontSize: '0.72rem',
-              letterSpacing: '0.14em',
-              marginLeft: '6px'
+              fontSize: '0.7rem',
+              color: 'var(--color-gold-light)',
+              userSelect: 'none'
             }}
           >
-            Reserve Slot &rarr;
-          </button>
+            <span>India | INR ₹</span>
+            <ChevronDown size={13} />
+          </div>
         </div>
       </div>
 
-      {/* Main Sticky Luxury Header */}
+      {/* Main Navigation Bar */}
       <header
         style={{
+          backgroundColor: '#FFFFFF',
+          borderBottom: '1px solid var(--color-silk-border)',
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(250, 247, 242, 0.96)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--color-silk-border)',
+          boxShadow: 'var(--shadow-subtle)',
           transition: 'all 0.3s ease'
         }}
       >
-        <div 
+        <div
+          className="header-inner-row"
           style={{
             maxWidth: '1440px',
             margin: '0 auto',
-            padding: '12px 24px',
+            padding: '14px 24px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            gap: '20px'
           }}
         >
-          {/* Mobile Menu Button */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Left Brand Identity & Mobile Menu Toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation Menu"
@@ -131,215 +161,201 @@ export const Header = () => {
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
-            {/* Desktop Left Nav Links */}
-            <nav className="desktop-nav" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-              {navLinks.slice(0, 3).map((link) => (
-                <button
-                  key={link.id}
-                  onClick={() => navigateTo(link.id)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '0.78rem',
-                    fontWeight: activePage === link.id ? '600' : '500',
-                    letterSpacing: '0.14em',
-                    textTransform: 'uppercase',
-                    color: activePage === link.id ? 'var(--color-burgundy)' : 'var(--color-onyx)',
-                    position: 'relative',
-                    paddingBottom: '4px',
-                    transition: 'color 0.2s ease'
-                  }}
-                >
-                  {link.label}
-                  {activePage === link.id && (
-                    <span 
-                      style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '16px',
-                        height: '1.5px',
-                        backgroundColor: 'var(--color-gold)'
-                      }} 
-                    />
-                  )}
-                </button>
-              ))}
-            </nav>
+            <Link 
+              to="/"
+              style={{ 
+                cursor: 'pointer', 
+                padding: '2px 0',
+                transition: 'transform 0.25s ease',
+                display: 'inline-block',
+                textDecoration: 'none'
+              }}
+              title="Mydhili Boutique Home"
+            >
+              <MydhiliLogo variant="gold" layout="full" height={44} className="header-logo" />
+            </Link>
           </div>
 
-          {/* Center Brand Identity (Master Sacred Monogram Crest & Wordmark) */}
-          <div 
-            onClick={() => navigateTo('home')}
-            style={{ 
-              cursor: 'pointer', 
-              padding: '4px 12px',
-              transition: 'transform 0.25s ease'
-            }}
-            title="Mydhili Boutique Home"
-          >
-            <MydhiliLogo variant="burgundy" layout="full" height={48} />
-          </div>
+          {/* Center: Clean Desktop Navigation Menu */}
+          <nav className="desktop-nav" style={{ display: 'flex', gap: '26px', alignItems: 'center' }}>
+            {navLinks.map((link) => {
+              if (link.isAnchor) {
+                return (
+                  <a
+                    key={link.id}
+                    href={link.path}
+                    onClick={(e) => handleAnchorClick(e, link.path)}
+                    style={{
+                      textDecoration: 'none',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: '0.78rem',
+                      fontWeight: '500',
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      color: 'var(--color-onyx)',
+                      position: 'relative',
+                      padding: '8px 0',
+                      transition: 'color 0.2s ease',
+                      display: 'inline-block'
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
 
-          {/* Desktop Right Nav Links & Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            <nav className="desktop-nav" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-              {navLinks.slice(3).map((link) => (
-                <button
+              return (
+                <NavLink
                   key={link.id}
-                  onClick={() => navigateTo(link.id)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
+                  to={link.path}
+                  end={link.path === '/'}
+                  style={({ isActive }) => ({
+                    textDecoration: 'none',
                     fontFamily: 'var(--font-sans)',
                     fontSize: '0.78rem',
-                    fontWeight: activePage === link.id ? '600' : '500',
+                    fontWeight: isActive ? '600' : '500',
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
-                    color: activePage === link.id ? 'var(--color-burgundy)' : 'var(--color-onyx)',
+                    color: isActive ? 'var(--color-burgundy)' : 'var(--color-onyx)',
                     position: 'relative',
-                    paddingBottom: '4px',
-                    transition: 'color 0.2s ease'
+                    padding: '8px 0',
+                    transition: 'color 0.2s ease',
+                    display: 'inline-block'
+                  })}
+                >
+                  {({ isActive }) => (
+                    <>
+                      {link.label}
+                      {isActive && (
+                        <span 
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: '2px',
+                            backgroundColor: 'var(--color-burgundy)'
+                          }} 
+                        />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          {/* Right Action Icons: Search, User, Wishlist, Bag */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            {/* Search */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              aria-label="Search Collections"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--color-burgundy)',
+                padding: '6px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <Search size={20} strokeWidth={1.75} />
+            </button>
+
+            {/* Account Profile */}
+            <Link
+              to="/account"
+              aria-label="Client Account"
+              style={{
+                color: 'var(--color-burgundy)',
+                padding: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none'
+              }}
+            >
+              <User size={20} strokeWidth={1.75} />
+            </Link>
+
+            {/* Wishlist */}
+            <Link
+              to="/wishlist"
+              aria-label={`Wishlist with ${wishlist.length} items`}
+              style={{
+                color: 'var(--color-burgundy)',
+                padding: '6px',
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none'
+              }}
+            >
+              <Heart size={20} strokeWidth={1.75} />
+              {wishlist.length > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '1px',
+                    right: '1px',
+                    backgroundColor: 'var(--color-gold)',
+                    color: 'var(--color-burgundy)',
+                    fontSize: '0.62rem',
+                    fontWeight: 700,
+                    borderRadius: '50%',
+                    width: '16px',
+                    height: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    lineHeight: 1
                   }}
                 >
-                  {link.label}
-                  {activePage === link.id && (
-                    <span 
-                      style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '16px',
-                        height: '1.5px',
-                        backgroundColor: 'var(--color-gold)'
-                      }} 
-                    />
-                  )}
-                </button>
-              ))}
-            </nav>
+                  {wishlist.length}
+                </span>
+              )}
+            </Link>
 
-            {/* Utility Icons: Search, Wishlist, Bag, Account */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: '8px' }}>
-              {/* Search Toggle */}
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                aria-label="Search Collections"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-burgundy)',
-                  padding: '6px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Search size={19} strokeWidth={1.8} />
-              </button>
-
-              {/* Wishlist */}
-              <button
-                onClick={() => navigateTo('wishlist')}
-                aria-label={`Wishlist with ${wishlist.length} items`}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-burgundy)',
-                  padding: '6px',
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Heart size={19} strokeWidth={1.8} />
-                {wishlist.length > 0 && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '2px',
-                      right: '1px',
-                      backgroundColor: 'var(--color-gold)',
-                      color: 'var(--color-burgundy)',
-                      fontSize: '0.62rem',
-                      fontWeight: 700,
-                      borderRadius: '50%',
-                      width: '15px',
-                      height: '15px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      lineHeight: 1
-                    }}
-                  >
-                    {wishlist.length}
-                  </span>
-                )}
-              </button>
-
-              {/* Shopping Bag Drawer Trigger */}
-              <button
-                onClick={() => setIsCartDrawerOpen(true)}
-                aria-label={`Shopping Bag with ${cartCount} items`}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-burgundy)',
-                  padding: '6px',
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <ShoppingBag size={19} strokeWidth={1.8} />
-                {cartCount > 0 && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '2px',
-                      right: '1px',
-                      backgroundColor: 'var(--color-burgundy)',
-                      color: 'var(--color-silk)',
-                      fontSize: '0.62rem',
-                      fontWeight: 700,
-                      borderRadius: '50%',
-                      width: '15px',
-                      height: '15px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      lineHeight: 1
-                    }}
-                  >
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Account Link */}
-              <button
-                onClick={() => navigateTo('account')}
-                aria-label="Client Account and Consultations"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-burgundy)',
-                  padding: '6px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <User size={19} strokeWidth={1.8} />
-              </button>
-            </div>
+            {/* Shopping Bag Drawer Toggle */}
+            <button
+              onClick={() => setIsCartDrawerOpen(true)}
+              aria-label={`Shopping bag with ${cartCount} items`}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--color-burgundy)',
+                padding: '6px',
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <ShoppingBag size={20} strokeWidth={1.75} />
+              {cartCount > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '1px',
+                    right: '1px',
+                    backgroundColor: 'var(--color-burgundy)',
+                    color: 'var(--color-silk)',
+                    fontSize: '0.62rem',
+                    fontWeight: 700,
+                    borderRadius: '50%',
+                    width: '16px',
+                    height: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    lineHeight: 1
+                  }}
+                >
+                  {cartCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -359,7 +375,7 @@ export const Header = () => {
                 <Search size={22} color="var(--color-gold)" />
                 <input
                   type="text"
-                  placeholder="Search Kanchipuram silks, bridal lehengas, Banarasi brocades..."
+                  placeholder="Search wedding lehengas, Kanchipuram silks, Banarasi brocades..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
@@ -367,7 +383,7 @@ export const Header = () => {
                     width: '100%',
                     padding: '10px 0',
                     border: 'none',
-                    borderBottom: '1px solid var(--color-gold)',
+                    borderBottom: '1.5px solid var(--color-gold)',
                     fontFamily: 'var(--font-serif)',
                     fontSize: '1.25rem',
                     color: 'var(--color-burgundy)',
@@ -422,7 +438,7 @@ export const Header = () => {
                       <img 
                         src={item.images[0]} 
                         alt={item.name} 
-                        style={{ width: '48px', height: '60px', objectFit: 'cover' }}
+                        style={{ width: '48px', height: '60px', objectFit: 'cover' }} 
                       />
                       <div>
                         <div style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem', color: 'var(--color-burgundy)', lineHeight: 1.2 }}>
@@ -442,61 +458,122 @@ export const Header = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div 
-            style={{
-              position: 'fixed',
-              top: '100%',
-              left: 0,
-              right: 0,
-              backgroundColor: 'var(--color-silk)',
-              borderBottom: '2px solid var(--color-gold)',
-              boxShadow: 'var(--shadow-burgundy)',
-              padding: '24px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '18px',
-              zIndex: 99
-            }}
-          >
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => {
-                  navigateTo(link.id);
-                  setMobileMenuOpen(false);
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '1.25rem',
-                  letterSpacing: '0.04em',
-                  color: 'var(--color-burgundy)',
-                  padding: '8px 0',
-                  borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <span>{link.label}</span>
-                <ChevronRight size={16} color="var(--color-gold)" />
-              </button>
-            ))}
-          </div>
+          <>
+            {/* Backdrop to close menu on click outside */}
+            <div 
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                zIndex: 95
+              }}
+            />
+            <div 
+              className="mobile-nav-drawer"
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                backgroundColor: 'var(--color-silk)',
+                borderBottom: '2px solid var(--color-gold)',
+                boxShadow: 'var(--shadow-burgundy)',
+                padding: '20px 24px 28px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                maxHeight: 'calc(100vh - 70px)',
+                overflowY: 'auto',
+                zIndex: 100,
+                animation: 'fadeIn 0.25s ease'
+              }}
+            >
+              {navLinks.map((link) => {
+                if (link.isAnchor) {
+                  return (
+                    <a
+                      key={link.id}
+                      href={link.path}
+                      onClick={(e) => handleAnchorClick(e, link.path)}
+                      style={{
+                        textDecoration: 'none',
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: '1.2rem',
+                        letterSpacing: '0.04em',
+                        color: 'var(--color-burgundy)',
+                        padding: '10px 0',
+                        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <span>{link.label}</span>
+                      <ChevronRight size={16} color="var(--color-gold)" />
+                    </a>
+                  );
+                }
+
+                return (
+                  <NavLink
+                    key={link.id}
+                    to={link.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={({ isActive }) => ({
+                      textDecoration: 'none',
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: '1.2rem',
+                      letterSpacing: '0.04em',
+                      color: isActive ? 'var(--color-gold)' : 'var(--color-burgundy)',
+                      padding: '10px 0',
+                      borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    })}
+                  >
+                    <span>{link.label}</span>
+                    <ChevronRight size={16} color="var(--color-gold)" />
+                  </NavLink>
+                );
+              })}
+            </div>
+          </>
         )}
       </header>
 
-      {/* Responsive CSS helper */}
+      {/* Responsive helper */}
       <style>{`
-        @media (max-width: 900px) {
+        @media (max-width: 960px) {
           .desktop-nav {
             display: none !important;
           }
           .mobile-menu-toggle {
             display: block !important;
+          }
+          .top-bar-country {
+            display: none !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .header-inner-row {
+            padding: 10px 14px !important;
+            gap: 10px !important;
+          }
+          .header-announcement-bar {
+            padding: 6px 12px !important;
+            font-size: 0.64rem !important;
+            letter-spacing: 0.08em !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .header-logo img {
+            height: 38px !important;
+            width: auto !important;
           }
         }
       `}</style>

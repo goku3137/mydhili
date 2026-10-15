@@ -83,13 +83,17 @@ export const AccountPage = () => {
 
         {/* Tab Navigation */}
         <div 
+          className="account-tabs-bar"
           style={{
             backgroundColor: '#FFFFFF',
             border: '1px solid var(--color-silk-border)',
             borderTop: 'none',
             display: 'flex',
             gap: '24px',
-            padding: '0 32px'
+            padding: '0 24px',
+            overflowX: 'auto',
+            whiteSpace: 'nowrap',
+            WebkitOverflowScrolling: 'touch'
           }}
         >
           {[
@@ -109,6 +113,8 @@ export const AccountPage = () => {
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
                 cursor: 'pointer',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
                 color: activeTab === tab.id ? 'var(--color-burgundy)' : 'var(--color-onyx-muted)',
                 fontWeight: activeTab === tab.id ? 600 : 400,
                 borderBottom: activeTab === tab.id ? '2px solid var(--color-gold)' : '2px solid transparent'
@@ -232,7 +238,7 @@ export const AccountPage = () => {
               </p>
               <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--color-silk-border)' }}>
                 <span className="eyebrow" style={{ color: 'var(--color-gold)' }}>✦ Recorded Bridal Measurements</span>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '14px', marginTop: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '14px', marginTop: '12px' }}>
                   <div style={{ padding: '12px', backgroundColor: 'var(--color-silk)', border: '1px solid var(--color-silk-border)' }}>
                     <div style={{ fontSize: '0.7rem', color: 'var(--color-onyx-muted)' }}>Bust</div>
                     <div style={{ fontWeight: 600 }}>36.5 inches</div>

@@ -81,7 +81,7 @@ export const PRODUCTS_DATA = [
     isMadeToOrder: false,
     availableSizes: ['Free Size (Includes Unstitched Blouse)'],
     images: [
-      'https://images.unsplash.com/photo-1610030469668-93510cb67655?auto=format&fit=crop&w=1000&q=85',
+      'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'Crafted on traditional pit looms in Varanasi, this Shikargah Katan silk saree whispers tales of royal hunts and fragrant royal gardens with exquisite fine silver-gilt thread.',
@@ -106,7 +106,7 @@ export const PRODUCTS_DATA = [
     isMadeToOrder: false,
     availableSizes: ['Free Size (Includes 1m Kasavu Blouse Piece)'],
     images: [
-      'https://images.unsplash.com/photo-1583391733975-088dd9fa73c7?auto=format&fit=crop&w=1000&q=85',
+      'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'The epitome of Southern aristocratic grace. Natural unbleached ivory threads harmonize with beaten gold kasavu borders, reminiscent of classical Kerala temple ceremonies.',
@@ -207,7 +207,7 @@ export const PRODUCTS_DATA = [
     availableSizes: ['Free Size'],
     images: [
       'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1610030469668-93510cb67655?auto=format&fit=crop&w=1000&q=85'
+      'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'A sovereign jewel-toned weave. The emerald depths are brought to life with resplendent gold zari, inspired by heirloom royal neckpieces and regal durbars.',
     careInstructions: 'Dry clean only.'
@@ -256,8 +256,8 @@ export const PRODUCTS_DATA = [
     isMadeToOrder: false,
     availableSizes: ['Free Size'],
     images: [
-      'https://images.unsplash.com/photo-1583391733975-088dd9fa73c7?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1000&q=85'
+      'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1000&q=85',
+      'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'Celebrating Malabar coastal royalty. The crisp handloom weave feels like second skin while the gold border catches every glimmer of twilight ceremony lamps.',
     careInstructions: 'Dry clean only.'
@@ -307,7 +307,7 @@ export const PRODUCTS_DATA = [
     availableSizes: ['Free Size'],
     images: [
       'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1583391733975-088dd9fa73c7?auto=format&fit=crop&w=1000&q=85'
+      'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'Refined, fluid, and utterly timeless. An understated champagne palette that glows subtly in candlelight, making it the perfect choice for intimate soirees.',
     careInstructions: 'Dry clean only.'
@@ -331,7 +331,7 @@ export const PRODUCTS_DATA = [
     isMadeToOrder: false,
     availableSizes: ['Free Size'],
     images: [
-      'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1000&q=85',
+      'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'Dramatic lightness meets historical depth. Ethereal silk organza allows graceful silhouettes while the rich plum chroma grounds the overall look in timeless poise.',
@@ -382,7 +382,7 @@ export const PRODUCTS_DATA = [
     availableSizes: ['Free Size'],
     images: [
       'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1610030469668-93510cb67655?auto=format&fit=crop&w=1000&q=85'
+      'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'A poetic tribute to Varanasi night skies over the holy Ganga. Rare midnight indigo silk enriched by genuine gold kadwa brocade that catches illumination from every angle.',
     careInstructions: 'Dry clean only.'
@@ -406,7 +406,7 @@ export const PRODUCTS_DATA = [
     isMadeToOrder: false,
     availableSizes: ['Free Size (Set Mundu & Blouse Piece)'],
     images: [
-      'https://images.unsplash.com/photo-1583391733975-088dd9fa73c7?auto=format&fit=crop&w=1000&q=85',
+      'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1000&q=85'
     ],
     description: 'The definitive authentic Kerala bridal wedding garment. Sacred simplicity elevated into the heights of aristocratic royalty with broad ceremonial gold borders.',
