@@ -137,13 +137,7 @@ export const BridalPage = () => {
           </p>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '30px'
-          }}
-        >
+        <div className="product-grid-4">
           {bridalProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -159,16 +153,18 @@ export const BridalPage = () => {
           borderBottom: '1px solid var(--color-silk-border)',
           padding: '80px 24px'
         }}
+        className="appointment-section"
       >
         <div
           style={{
             maxWidth: '900px',
             margin: '0 auto',
             border: '1px solid var(--color-gold)',
-            padding: '48px clamp(20px, 5vw, 60px)',
+            padding: '48px clamp(16px, 5vw, 60px)',
             backgroundColor: 'var(--color-silk)',
             boxShadow: 'var(--shadow-gold)'
           }}
+          className="appointment-card"
         >
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
             <span className="eyebrow">✦ Bespoke Salon</span>
@@ -206,7 +202,7 @@ export const BridalPage = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600, marginBottom: '6px' }}>
                     Bride's Full Name *
@@ -252,7 +248,7 @@ export const BridalPage = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600, marginBottom: '6px' }}>
                     Email Address *

@@ -52,7 +52,7 @@ export const AboutPage = () => {
         <div 
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
             gap: '48px',
             alignItems: 'center'
           }}
@@ -83,8 +83,12 @@ export const AboutPage = () => {
 
           <div style={{ position: 'relative' }}>
             <img 
-              src="https://images.unsplash.com/photo-1610030469668-93510cb67655?auto=format&fit=crop&w=1000&q=85" 
+              src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=85" 
               alt="Craftsmanship in Banaras"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=85';
+              }}
               style={{
                 width: '100%',
                 height: '460px',
@@ -117,10 +121,35 @@ export const AboutPage = () => {
             </p>
           </div>
 
+          {/* Official Sacred Monogram Display */}
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <div 
+              style={{
+                display: 'inline-block',
+                padding: '28px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(212, 175, 55, 0.14) 0%, rgba(250, 247, 242, 0) 70%)',
+                border: '1px solid rgba(212, 175, 55, 0.35)'
+              }}
+            >
+              <img 
+                src="/images/mydhili-crest-tight.png" 
+                alt="Mydhili Sacred Monogram Crest" 
+                style={{
+                  height: '160px',
+                  width: 'auto',
+                  display: 'block',
+                  margin: '0 auto',
+                  filter: 'drop-shadow(0 12px 32px rgba(212, 175, 55, 0.45))'
+                }}
+              />
+            </div>
+          </div>
+
           <div 
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
               gap: '24px'
             }}
           >
@@ -168,7 +197,7 @@ export const AboutPage = () => {
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
-            <MydhiliLogo variant="burgundy" layout="full" height={60} />
+            <MydhiliLogo variant="gold" layout="full" height={68} />
           </div>
         </div>
       </section>

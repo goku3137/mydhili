@@ -1,9 +1,31 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { PRODUCTS_DATA } from '../data/products';
 
 const ShopContext = createContext();
 
+export const categoryToSlug = (cat) => {
+  if (!cat || cat === 'All Collections') return 'all';
+  return cat.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+};
+
+export const slugToCategory = (slug) => {
+  if (!slug || slug === 'all' || slug === 'new-arrivals') return 'All Collections';
+  const mapping = {
+    'bridal-couture': 'Bridal Couture',
+    'kanchipuram-silks': 'Kanchipuram Silks',
+    'banarasi-brocades': 'Banarasi Brocades',
+    'kerala-kasavu': 'Kerala Kasavu',
+    'festive-silks': 'Festive Silks',
+    'bespoke-blouses': 'Bespoke Blouses'
+  };
+  return mapping[slug] || 'All Collections';
+};
+
 export const ShopProvider = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // Cart state persisted to localStorage
   const [cart, setCart] = useState(() => {
     try {
@@ -24,8 +46,23 @@ export const ShopProvider = ({ children }) => {
     }
   });
 
-  // Active view navigation
-  const [activePage, setActivePage] = useState('home'); // 'home'|'shop'|'bridal'|'bespoke'|'about'|'product'|'cart'|'wishlist'|'checkout'|'account'|'contact'|'faqs'
+  // Derive active view from URL pathname
+  const getActivePage = (pathname) => {
+    if (pathname === '/') return 'home';
+    if (pathname.startsWith('/collections')) return 'shop';
+    if (pathname.startsWith('/products')) return 'product';
+    if (pathname.startsWith('/bridal')) return 'bridal';
+    if (pathname.startsWith('/bespoke')) return 'bespoke';
+    if (pathname.startsWith('/about')) return 'about';
+    if (pathname.startsWith('/checkout')) return 'checkout';
+    if (pathname.startsWith('/wishlist')) return 'wishlist';
+    if (pathname.startsWith('/account')) return 'account';
+    if (pathname.startsWith('/contact')) return 'contact';
+    if (pathname.startsWith('/faqs')) return 'faqs';
+    return 'home';
+  };
+
+  const activePage = getActivePage(location.pathname);
   const [selectedProductId, setSelectedProductId] = useState('mb-001');
   const [selectedCategory, setSelectedCategory] = useState('All Collections');
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,20 +103,57 @@ export const ShopProvider = ({ children }) => {
     localStorage.setItem('mydhili_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  // Navigate to product detail
+  // Navigate to product detail with real URL
   const viewProduct = (productId) => {
     setSelectedProductId(productId);
-    setActivePage('product');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate(`/products/${productId}`);
   };
 
-  // Navigate to page with smooth scroll
+  // Navigate to page with real URL routing
   const navigateTo = (page, categoryFilter = null) => {
     if (categoryFilter) {
       setSelectedCategory(categoryFilter);
+      navigate(`/collections/${categoryToSlug(categoryFilter)}`);
+      return;
     }
-    setActivePage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    switch (page) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'shop':
+        navigate('/collections');
+        break;
+      case 'product':
+        navigate(`/products/${selectedProductId}`);
+        break;
+      case 'bridal':
+        navigate('/bridal');
+        break;
+      case 'bespoke':
+        navigate('/bespoke');
+        break;
+      case 'about':
+        navigate('/about');
+        break;
+      case 'checkout':
+        navigate('/checkout');
+        break;
+      case 'wishlist':
+        navigate('/wishlist');
+        break;
+      case 'account':
+        navigate('/account');
+        break;
+      case 'contact':
+        navigate('/contact');
+        break;
+      case 'faqs':
+        navigate('/faqs');
+        break;
+      default:
+        navigate(`/${page}`);
+    }
   };
 
   // Add to cart
@@ -158,6 +232,7 @@ export const ShopProvider = ({ children }) => {
         toggleWishlist,
         isInWishlist,
         setSelectedCategory,
+        setSelectedProductId,
         setSearchQuery,
         setIsSearchOpen,
         setIsCartDrawerOpen,

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { ChevronDown, MapPin, Phone, Mail, Clock, ShieldCheck, Sparkles } from 'lucide-react';
 
-export const SupportingPages = () => {
+export const SupportingPages = ({ initialTab }) => {
   const { activePage } = useShop();
+  const currentTab = initialTab || activePage;
 
   const [activeFaq, setActiveFaq] = useState(0);
 
@@ -34,7 +35,7 @@ export const SupportingPages = () => {
     <div className="supporting-pages animate-fade-in" style={{ padding: '60px 24px 90px' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Contact Page */}
-        {activePage === 'contact' ? (
+        {currentTab === 'contact' ? (
           <div>
             <div style={{ textAlign: 'center', marginBottom: '48px' }}>
               <span className="eyebrow">✦ Atelier Hospitality</span>
@@ -48,9 +49,10 @@ export const SupportingPages = () => {
             </div>
 
             <div 
+              className="contact-info-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
                 gap: '36px'
               }}
             >

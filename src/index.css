@@ -24,6 +24,7 @@
   --color-onyx: #2D2325;
   --color-onyx-muted: #665b5e;
   
+  --font-display: 'Cinzel', 'Cormorant Garamond', Georgia, serif;
   --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
@@ -31,6 +32,39 @@
   --shadow-subtle: 0 4px 20px rgba(45, 35, 37, 0.05);
   --shadow-gold: 0 8px 30px rgba(212, 175, 55, 0.15);
   --shadow-burgundy: 0 10px 40px rgba(56, 7, 18, 0.25);
+}
+
+/* Typography matching official Mydhili Logo */
+.font-brand-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.brand-boutique-tag {
+  font-family: var(--font-sans);
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-boutique-tag::before,
+.brand-boutique-tag::after {
+  content: '';
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0.55;
+}
+
+.gold-metallic-text {
+  background: linear-gradient(135deg, #ECC86A 0%, #D4AF37 50%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 *, *::before, *::after {
@@ -213,9 +247,301 @@ h1, h2, h3, h4, .font-serif {
   animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Hero Announcement Card Animation */
+@keyframes heroCardIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes heroCardOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+}
+
+.hero-editorial-box {
+  animation: heroCardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-editorial-box.closing {
+  animation: heroCardOut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  pointer-events: none;
+}
+
+.hero-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background-color: rgba(56, 7, 18, 0.65);
+  color: var(--color-silk);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 5;
+}
+
+.hero-close-btn:hover {
+  background-color: var(--color-gold);
+  color: var(--color-burgundy);
+  border-color: var(--color-gold);
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+}
+
+.hero-reopen-pill {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(56, 7, 18, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  color: var(--color-gold);
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.hero-reopen-pill:hover {
+  background-color: var(--color-gold);
+  color: var(--color-burgundy);
+  border-color: var(--color-gold);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 22px rgba(212, 175, 55, 0.45);
+}
+
+
+/* ==========================================================================
+   E-COMMERCE PRODUCT & CATEGORY LAYOUT (IHA DESIGNS INSPIRATION)
+   ========================================================================== */
+.product-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.category-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.category-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #f0ece3;
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: flex-end;
+  border: 1px solid var(--color-silk-border);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(56, 7, 18, 0.12);
+}
+
+.category-card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-card:hover img {
+  transform: scale(1.06);
+}
+
+.category-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 40%, rgba(56, 7, 18, 0.88) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px;
+  color: var(--color-silk);
+  z-index: 2;
+}
+
+.category-pills-bar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px 0 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-pills-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.category-pill {
+  padding: 8px 18px;
+  border-radius: 40px;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid var(--color-silk-border);
+  background-color: #FFFFFF;
+  color: var(--color-onyx);
+  transition: all 0.25s ease;
+}
+
+.category-pill:hover {
+  border-color: var(--color-gold);
+  color: var(--color-burgundy);
+  background-color: var(--color-silk);
+}
+
+.category-pill.active {
+  background-color: var(--color-burgundy);
+  border-color: var(--color-burgundy);
+  color: var(--color-gold);
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(56, 7, 18, 0.2);
+}
+
+.section-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-silk-border);
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--color-burgundy);
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+}
+
+.section-view-all {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-burgundy);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px 0;
+  border-bottom: 1.5px solid var(--color-gold);
+  transition: all 0.2s ease;
+}
+
+.section-view-all:hover {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-burgundy);
+  transform: translateX(3px);
+}
+
 /* ==========================================================================
    MOBILE & TABLET RESPONSIVE REFINEMENTS
    ========================================================================== */
+#root {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+img, video, iframe {
+  max-width: 100%;
+}
+
+input, select, textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Product Detail Page Responsive Grid */
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Checkout Page Responsive Grid */
+.checkout-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 36px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .product-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .category-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .checkout-main-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
 @media (max-width: 768px) {
   html {
     font-size: 15px;
@@ -227,11 +553,29 @@ h1, h2, h3, h4, .font-serif {
   .btn-luxury-ghost-gold {
     padding: 12px 20px;
     font-size: 0.74rem;
-    width: 100%;
   }
 
   .gold-rule {
     margin: 14px auto;
+  }
+
+  .product-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .category-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .section-title {
+    font-size: 1.45rem;
+  }
+
+  /* Hide hover quick actions on touch/mobile devices so direct card tapping is instant */
+  .product-quick-action-overlay {
+    display: none !important;
   }
 
   /* Grid adjustments for mobile viewports */
@@ -239,8 +583,81 @@ h1, h2, h3, h4, .font-serif {
   .checkout-page,
   .bridal-page,
   .bespoke-page,
-  .about-page {
-    padding-top: 24px !important;
+  .about-page,
+  .wishlist-page,
+  .account-page {
+    padding-top: 16px !important;
+  }
+
+  .shop-main-container,
+  .homepage-main-container {
+    padding: 20px 16px 60px !important;
+  }
+
+  .shop-filter-bar {
+    padding: 14px 16px !important;
+    gap: 12px !important;
+  }
+
+  .shop-hero-banner {
+    padding: 40px 16px !important;
+  }
+
+  .product-detail-grid {
+    padding: 0 16px !important;
+    gap: 24px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-header-row {
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .hero-editorial-box {
+    width: 94% !important;
+    padding: 24px 16px 20px !important;
+    max-height: 90% !important;
+    overflow-y: auto !important;
+  }
+
+  .hero-editorial-box h1 {
+    font-size: 1.4rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .hero-editorial-box p {
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .hero-editorial-box .btn-luxury-gold,
+  .hero-editorial-box .btn-luxury-ghost-gold {
+    width: 100% !important;
+    padding: 10px 16px !important;
+    font-size: 0.72rem !important;
+  }
+
+  .hero-split-banner {
+    min-height: 480px !important;
+  }
+
+  .product-detail-buybox {
+    padding: 20px 16px !important;
+  }
+
+  .checkout-card {
+    padding: 20px 16px !important;
+  }
+
+  .form-row-2-col,
+  .form-row-3-col {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
   }
 }
 
@@ -249,9 +666,41 @@ h1, h2, h3, h4, .font-serif {
     font-size: 14px;
   }
 
-  /* Compact header on small screens */
-  header {
-    padding: 8px 12px !important;
+  .product-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .product-card-details {
+    padding: 12px 10px 14px !important;
+  }
+
+  .product-card-title {
+    font-size: 0.98rem !important;
+  }
+
+  .product-card p {
+    font-size: 0.72rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .footer-newsletter-form {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .footer-newsletter-form input,
+  .footer-newsletter-form button {
+    width: 100% !important;
+  }
+
+  .footer-newsletter-banner {
+    padding-bottom: 32px !important;
+    margin-bottom: 32px !important;
+  }
+
+  .footer-links-grid {
+    gap: 24px !important;
   }
 }
 

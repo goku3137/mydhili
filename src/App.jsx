@@ -1,5 +1,6 @@
-import React from 'react';
-import { ShopProvider, useShop } from './context/ShopContext';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { ShopProvider } from './context/ShopContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -14,42 +15,40 @@ import WishlistPage from './pages/WishlistPage';
 import AccountPage from './pages/AccountPage';
 import SupportingPages from './pages/SupportingPages';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant'
+    });
+  }, [pathname]);
+
+  return null;
+}
+
 const MainApp = () => {
-  const { activePage } = useShop();
-
-  const renderCurrentPage = () => {
-    switch (activePage) {
-      case 'home':
-        return <HomePage />;
-      case 'shop':
-        return <ShopPage />;
-      case 'product':
-        return <ProductDetailPage />;
-      case 'bridal':
-        return <BridalPage />;
-      case 'bespoke':
-        return <BespokePage />;
-      case 'about':
-        return <AboutPage />;
-      case 'checkout':
-        return <CheckoutPage />;
-      case 'wishlist':
-        return <WishlistPage />;
-      case 'account':
-        return <AccountPage />;
-      case 'contact':
-      case 'faqs':
-        return <SupportingPages />;
-      default:
-        return <HomePage />;
-    }
-  };
-
   return (
     <div className="mydhili-app-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <main style={{ flex: 1 }}>
-        {renderCurrentPage()}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/collections" element={<ShopPage />} />
+          <Route path="/collections/:categorySlug" element={<ShopPage />} />
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
+          <Route path="/bridal" element={<BridalPage />} />
+          <Route path="/bespoke" element={<BespokePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/contact" element={<SupportingPages initialTab="contact" />} />
+          <Route path="/faqs" element={<SupportingPages initialTab="faqs" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
       <Footer />
       <CartDrawer />
@@ -59,9 +58,12 @@ const MainApp = () => {
 
 export function App() {
   return (
-    <ShopProvider>
-      <MainApp />
-    </ShopProvider>
+    <BrowserRouter>
+      <ShopProvider>
+        <ScrollToTop />
+        <MainApp />
+      </ShopProvider>
+    </BrowserRouter>
   );
 }
 

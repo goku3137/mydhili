@@ -7,10 +7,10 @@ import {
   Sparkles, 
   CheckCircle2, 
   ArrowLeft,
-  ShoppingBag,
-  Truck
+  ShoppingBag
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import MydhiliLogo from '../components/MydhiliLogo';
 
 export const CheckoutPage = () => {
   const { cart, cartSubtotal, clearCart, navigateTo } = useShop();
@@ -86,9 +86,13 @@ export const CheckoutPage = () => {
             <CheckCircle2 size={36} color="var(--color-burgundy)" />
           </div>
 
-          <span className="eyebrow">✦ Order Confirmed</span>
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+            <MydhiliLogo layout="crest" height={60} />
+          </div>
+
+          <span className="eyebrow" style={{ color: 'var(--color-gold)' }}>✦ White-Glove Couture Order Placed</span>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--color-burgundy)', marginTop: '8px', marginBottom: '14px' }}>
-            Congratulations, Your Couture Order is Placed
+            Congratulations, Your Couture Order is Confirmed
           </h1>
           <div className="gold-rule" style={{ maxWidth: '100px', margin: '14px auto' }} />
 
@@ -185,10 +189,10 @@ export const CheckoutPage = () => {
         </div>
 
         <div 
+          className="checkout-main-grid"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-            gap: '48px',
+            maxWidth: '1200px',
+            margin: '0 auto',
             alignItems: 'start'
           }}
         >
@@ -197,6 +201,7 @@ export const CheckoutPage = () => {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
               {/* Shipping Details */}
               <div 
+                className="checkout-card"
                 style={{
                   backgroundColor: '#FFFFFF',
                   padding: '30px',
@@ -210,7 +215,7 @@ export const CheckoutPage = () => {
                   </h3>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div className="form-row-2-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px', fontWeight: 600 }}>First Name</label>
                     <input 
@@ -233,7 +238,7 @@ export const CheckoutPage = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div className="form-row-2-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px', fontWeight: 600 }}>Email</label>
                     <input 
@@ -267,7 +272,7 @@ export const CheckoutPage = () => {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
+                <div className="form-row-3-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px', fontWeight: 600 }}>City</label>
                     <input 

@@ -1,23 +1,49 @@
-import React, { useState, useMemo } from 'react';
-import { useShop } from '../context/ShopContext';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useShop, slugToCategory, categoryToSlug } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
 import { CATEGORIES, FABRICS } from '../data/products';
-import { Filter, SlidersHorizontal, ArrowUpDown, Sparkles, Check } from 'lucide-react';
+import { Filter, ArrowUpDown, Sparkles } from 'lucide-react';
 
 export const ShopPage = () => {
   const { products, selectedCategory, setSelectedCategory } = useShop();
+  const { categorySlug } = useParams();
+  const navigate = useNavigate();
 
   const [activeFabric, setActiveFabric] = useState('All Fabrics');
   const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'price-low' | 'price-high' | 'rating'
   const [onlyMadeToOrder, setOnlyMadeToOrder] = useState(false);
   const [priceRange, setPriceRange] = useState(200000); // Max filter
 
+  // Synchronize category with URL parameter
+  useEffect(() => {
+    if (categorySlug) {
+      const mapped = slugToCategory(categorySlug);
+      if (mapped && mapped !== selectedCategory) {
+        setSelectedCategory(mapped);
+      }
+    } else if (selectedCategory !== 'All Collections') {
+      setSelectedCategory('All Collections');
+    }
+  }, [categorySlug]);
+
+  const activeCategory = categorySlug ? slugToCategory(categorySlug) : selectedCategory;
+
+  const handleCategorySelect = (cat) => {
+    setSelectedCategory(cat);
+    if (cat === 'All Collections') {
+      navigate('/collections');
+    } else {
+      navigate(`/collections/${categoryToSlug(cat)}`);
+    }
+  };
+
   // Filter & Sort pipeline
   const filteredProducts = useMemo(() => {
     return products
       .filter((p) => {
         const matchesCategory =
-          selectedCategory === 'All Collections' || p.category === selectedCategory;
+          activeCategory === 'All Collections' || p.category === activeCategory;
         const matchesFabric =
           activeFabric === 'All Fabrics' || p.fabric.toLowerCase().includes(activeFabric.toLowerCase().replace('all ', ''));
         const matchesOrderType = !onlyMadeToOrder || p.isMadeToOrder;
@@ -31,12 +57,13 @@ export const ShopPage = () => {
         if (sortBy === 'rating') return b.rating - a.rating;
         return 0; // Default featured
       });
-  }, [products, selectedCategory, activeFabric, onlyMadeToOrder, priceRange, sortBy]);
+  }, [products, activeCategory, activeFabric, onlyMadeToOrder, priceRange, sortBy]);
 
   return (
     <div className="shop-page animate-fade-in" style={{ paddingBottom: '90px' }}>
       {/* Editorial Category Header */}
       <div
+        className="shop-hero-banner"
         style={{
           backgroundColor: 'var(--color-burgundy)',
           color: 'var(--color-silk)',
@@ -51,13 +78,13 @@ export const ShopPage = () => {
           </span>
           <h1
             style={{
-              fontSize: 'clamp(2.4rem, 4vw, 3.6rem)',
+              fontSize: 'clamp(2rem, 4vw, 3.6rem)',
               color: 'var(--color-silk)',
               marginTop: '10px',
               marginBottom: '14px'
             }}
           >
-            {selectedCategory === 'All Collections' ? 'The Haute Couture Catalogue' : selectedCategory}
+            {activeCategory === 'All Collections' ? 'The Haute Couture Catalogue' : activeCategory}
           </h1>
           <div className="gold-rule" style={{ maxWidth: '120px', margin: '14px auto' }} />
           <p style={{ color: 'rgba(250, 247, 242, 0.85)', fontSize: '0.9rem', lineHeight: 1.6 }}>
@@ -67,7 +94,7 @@ export const ShopPage = () => {
       </div>
 
       {/* Main Container */}
-      <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '40px 24px' }}>
+      <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '40px 24px' }} className="shop-main-container">
         {/* Category Pills Bar */}
         <div
           style={{
@@ -82,7 +109,7 @@ export const ShopPage = () => {
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => handleCategorySelect(cat)}
               style={{
                 padding: '10px 20px',
                 whiteSpace: 'nowrap',
@@ -90,9 +117,9 @@ export const ShopPage = () => {
                 fontFamily: 'var(--font-sans)',
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                border: selectedCategory === cat ? '1px solid var(--color-burgundy)' : '1px solid var(--color-silk-border)',
-                backgroundColor: selectedCategory === cat ? 'var(--color-burgundy)' : '#FFFFFF',
-                color: selectedCategory === cat ? 'var(--color-silk)' : 'var(--color-onyx)',
+                border: activeCategory === cat ? '1px solid var(--color-burgundy)' : '1px solid var(--color-silk-border)',
+                backgroundColor: activeCategory === cat ? 'var(--color-burgundy)' : '#FFFFFF',
+                color: activeCategory === cat ? 'var(--color-silk)' : 'var(--color-onyx)',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease'
               }}
@@ -104,6 +131,7 @@ export const ShopPage = () => {
 
         {/* Filter Controls & Sort Bar */}
         <div
+          className="shop-filter-bar"
           style={{
             backgroundColor: '#FFFFFF',
             padding: '18px 24px',
@@ -216,7 +244,7 @@ export const ShopPage = () => {
             </p>
             <button
               onClick={() => {
-                setSelectedCategory('All Collections');
+                handleCategorySelect('All Collections');
                 setActiveFabric('All Fabrics');
                 setOnlyMadeToOrder(false);
               }}
@@ -226,13 +254,7 @@ export const ShopPage = () => {
             </button>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
-              gap: '28px'
-            }}
-          >
+          <div className="product-grid-4 shop-product-grid">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
